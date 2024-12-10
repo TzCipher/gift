@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unlock 3D Model</title>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/OBJLoader.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    canvas {
+      display: block;
+      margin: 20px auto;
+    }
+    #error {
+      color: red;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Unlock the Model</h1>
+  <p>Enter your profile description to see if you qualify:</p>
+  <textarea id="description" rows="4" cols="50" placeholder="Enter your profile description"></textarea>
+  <br>
+  <button id="checkButton">Check</button>
+  <p id="error">Incorrect profile description. Try again!</p>
+  <div id="modelContainer" style="display:none;">
+    <h2>Congratulations! Here's your model:</h2>
+    <canvas id="modelCanvas" width="400" height="400"></canvas>
+  </div>
+  <script>
+    const targetPhrase = "A bag that is wet, is that even right?\n" +
+      "Does that causes someone, some fright?\n" +
+      "A bag that seems, suspicious! I can say..\n" +
+      "Make sure to grab it! Before anything gets in the way...";
+
+    document.getElementById("checkButton").addEventListener("click", () => {
+      const userInput = document.getElementById("description").value.trim();
+      if (userInput === targetPhrase) {
+        document.getElementById("error").style.display = "none";
+        document.getElementById("modelContainer").style.display = "block";
+        loadModel();
+      } else {
+        document.getElementById("error").style.display = "block";
+        document.getElementById("modelContainer").style.display = "none";
+      }
+    });
+
+    function loadModel() {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('modelCanvas') });
+      renderer.setSize(400, 400);
+
+      const objLoader = new THREE.OBJLoader();
+      objLoader.load('path/to/your/model.obj', (object) => {
+        scene.add(object);
+        object.position.set(0, 0, 0);
+        object.rotation.x = Math.PI / 2; // Adjust rotation if needed
+      });
+
+      const light = new THREE.PointLight(0xffffff, 1, 100);
+      light.position.set(10, 10, 10);
+      scene.add(light);
+
+      camera.position.z = 5;
+
+      function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+      }
+      animate();
+    }
+  </script>
+</body>
+</html>
